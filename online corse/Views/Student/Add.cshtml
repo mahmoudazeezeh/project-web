@@ -1,0 +1,38 @@
+﻿@model Student
+@{
+    ViewData["Title"] = "Sign up";
+}
+
+<section class="auth">
+    <section class="form-card panel">
+        <p class="kicker">New account</p>
+        <h1>Sign up</h1>
+        <p class="meta">Fill this form once. Next step is Sign in, then enroll from Courses.</p>
+        @if (ViewBag.Error != null)
+        {
+            <p class="err">@ViewBag.Error</p>
+        }
+        <form asp-action="Add" asp-controller="Student" method="post">
+            <label asp-for="Name">Full name</label>
+            <input asp-for="Name" required />
+            <label asp-for="Email">Email</label>
+            <input asp-for="Email" type="email" required />
+            <label asp-for="Average">Average</label>
+            <input asp-for="Average" type="number" step="0.1" required />
+            <label asp-for="CorseId">Starting course</label>
+            <select asp-for="CorseId" required>
+                <option value="">Select a course</option>
+                @foreach (Corse c in ViewBag.Corses)
+                {
+                    <option value="@c.CorseId">@c.CorseName — @c.Instructor</option>
+                }
+            </select>
+            <label asp-for="Password">Password</label>
+            <input type="password" asp-for="Password" required />
+            <div class="actions">
+                <button type="submit">Create account</button>
+                <a class="btn btn-ghost" asp-action="Login">I already have an account</a>
+            </div>
+        </form>
+    </section>
+</section>

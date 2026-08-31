@@ -1,0 +1,29 @@
+@model Corse
+@{
+    var edit = Model.CorseId > 0;
+    ViewData["Title"] = edit ? "Edit course" : "Add course";
+}
+
+<section class="auth">
+    <section class="form-card panel">
+        <p class="kicker">Admin</p>
+        <h1>@(edit ? "Edit course" : "Add course")</h1>
+        <p class="meta">@(edit ? "Update the title, instructor, or price." : "The new course appears in the catalog right after you save.")</p>
+        <form asp-action="SaveCourse" method="post">
+            @if (edit)
+            {
+                <input type="hidden" asp-for="CorseId" />
+            }
+            <label asp-for="CorseName">Course title</label>
+            <input asp-for="CorseName" required />
+            <label asp-for="Instructor">Instructor</label>
+            <input asp-for="Instructor" required />
+            <label asp-for="CosrePrice">Price</label>
+            <input asp-for="CosrePrice" type="number" required />
+            <div class="actions">
+                <button type="submit">Save course</button>
+                <a class="btn btn-ghost" asp-action="Courses">Back to courses</a>
+            </div>
+        </form>
+    </section>
+</section>

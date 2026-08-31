@@ -1,0 +1,15 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+<section class="auth">
+    <section class="panel form-card">
+        <p class="kicker">Error</p>
+        <h1>Something went wrong.</h1>
+        @if (Model.ShowRequestId)
+        {
+            <p class="meta">Request @Model.RequestId</p>
+        }
+        <a class="btn" asp-controller="Home" asp-action="Index">Back to home</a>
+    </section>
+</section>

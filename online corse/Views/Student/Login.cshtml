@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "Sign in";
+}
+
+<section class="auth">
+    <section class="form-card panel">
+        <p class="kicker">Welcome back</p>
+        <h1>Sign in</h1>
+        <p class="meta">Use the email and password from your account. After you sign in, Account and Courses stay linked to you.</p>
+        @if (ViewBag.Error != null)
+        {
+            <p class="err">@ViewBag.Error</p>
+        }
+        <form asp-action="Login" asp-controller="Student" method="post">
+            <label for="email">Email</label>
+            <input id="email" type="email" name="email" required placeholder="you@email.com" />
+            <label for="stpass">Password</label>
+            <input id="stpass" type="password" name="stpass" required />
+            <div class="actions">
+                <button type="submit">Sign in</button>
+                <a class="btn btn-ghost" asp-action="Add">Create account</a>
+            </div>
+        </form>
+    </section>
+</section>

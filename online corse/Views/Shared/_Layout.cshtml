@@ -1,0 +1,60 @@
+@{
+    var sid = Context.Session.GetInt32("stid");
+    var uname = Context.Session.GetString("name");
+    var uemail = Context.Session.GetString("email");
+    var isAdmin = uemail == "aaazeezeh@gmail.com";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] · Lerno</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Outfit:wght@400;500;650&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="@(ViewData["Page"] as string)">
+    <header class="topbar">
+        <a class="brand" asp-controller="Home" asp-action="Index">Lerno</a>
+        <nav class="nav">
+            <a asp-controller="Home" asp-action="Index">Home</a>
+            <a asp-controller="Student" asp-action="Courses">Courses</a>
+            @if (sid != null)
+            {
+                <a asp-controller="Student" asp-action="sDetails">Account</a>
+                @if (isAdmin)
+                {
+                    <a asp-controller="Student" asp-action="Index">Students</a>
+                }
+            }
+            else
+            {
+                <a asp-controller="Student" asp-action="Add">Sign up</a>
+            }
+        </nav>
+        @if (sid != null)
+        {
+            <a class="account-link" asp-controller="Student" asp-action="sDetails">@uname</a>
+        }
+        else
+        {
+            <a class="btn btn-nav" asp-controller="Student" asp-action="Login">Sign in</a>
+        }
+    </header>
+    <main class="page">
+        @RenderBody()
+    </main>
+    <footer class="foot">
+        <div>
+            <a asp-controller="Home" asp-action="Index">Home</a>
+            <a asp-controller="Student" asp-action="Courses">Courses</a>
+            <a asp-controller="Student" asp-action="Add">Sign up</a>
+            <a asp-controller="Student" asp-action="Login">Sign in</a>
+        </div>
+        <p>Lerno platform</p>
+    </footer>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,52 @@
+@model List<Corse>
+@{
+    ViewData["Title"] = "Courses";
+    var enrolled = (int?)ViewBag.Enrolled ?? 0;
+    var signedIn = Context.Session.GetInt32("stid") != null;
+}
+
+<div class="section-head">
+    <div>
+        <p class="kicker">Catalog</p>
+        <h1>Courses</h1>
+        <p class="meta">Search by title or instructor. Sign in, then enroll. Your course appears under Account.</p>
+    </div>
+    @if (ViewBag.Admin == true)
+    {
+        <a class="btn" asp-action="AddCourse">Add course</a>
+    }
+</div>
+<form class="searchbar" method="get" asp-action="Courses">
+    <input type="text" name="searchKey" placeholder="Search title or instructor" />
+    <button type="submit">Search</button>
+</form>
+<div class="grid">
+    @foreach (var c in Model)
+    {
+        <article class="panel course-card">
+            <p class="meta">@c.Instructor</p>
+            <h3>@c.CorseName</h3>
+            <p class="price">$@c.CosrePrice</p>
+            @if (enrolled == c.CorseId)
+            {
+                <p class="badge">Enrolled</p>
+            }
+            else if (signedIn)
+            {
+                <a class="btn" asp-action="Enroll" asp-route-id="@c.CorseId">Enroll</a>
+            }
+            else
+            {
+                <a class="btn btn-ghost" asp-action="Login">Sign in to enroll</a>
+            }
+            @if (ViewBag.Admin == true)
+            {
+                <p class="meta admin-links">
+                    <a asp-action="EditCourse" asp-route-id="@c.CorseId">Edit</a>
+                    ·
+                    <a asp-action="DeleteCourse" asp-route-id="@c.CorseId">Delete</a>
+                </p>
+            }
+        </article>
+    }
+</div>

@@ -1,0 +1,35 @@
+@model List<Corse>
+@{
+    ViewData["Title"] = "Home";
+    ViewData["Page"] = "home";
+}
+
+<section class="hero-banner">
+    <div class="hero-inner">
+        <p class="kicker light">Lerno platform</p>
+        <h1 class="display">A platform for focused courses.</h1>
+        <p class="lead light">Browse the catalog, enroll in a course, and manage everything from your account.</p>
+        <div class="actions">
+            <a class="btn" asp-controller="Student" asp-action="Courses">Browse courses</a>
+            <a class="btn btn-light" asp-controller="Student" asp-action="Add">Sign up</a>
+        </div>
+    </div>
+</section>
+
+<section class="home-body">
+    <div class="section-head">
+        <h2>Featured courses</h2>
+        <a asp-controller="Student" asp-action="Courses">See all courses</a>
+    </div>
+    <div class="grid">
+        @foreach (var c in Model)
+        {
+            <article class="panel course-card">
+                <p class="meta">@c.Instructor</p>
+                <h3>@c.CorseName</h3>
+                <p class="price">$@c.CosrePrice</p>
+                <a class="card-link" asp-controller="Student" asp-action="Courses">Open catalog</a>
+            </article>
+        }
+    </div>
+</section>

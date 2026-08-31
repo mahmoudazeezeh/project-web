@@ -1,0 +1,23 @@
+﻿@model string
+@{
+    ViewData["Title"] = "Account";
+    var isAdmin = Context.Session.GetString("email") == "aaazeezeh@gmail.com";
+}
+
+<section class="dash">
+    <div class="panel">
+        <p class="kicker">Account</p>
+        <h1 class="display">Welcome, @Model.</h1>
+        <p class="lead">You are signed in. Open your profile, enroll in a course, or change your password. The menu at the top stays with you on every page.</p>
+        <div class="actions">
+            <a class="btn" asp-action="sDetails">My profile</a>
+            <a class="btn btn-ghost" asp-action="Courses">Browse courses</a>
+            <a class="btn btn-ghost" asp-action="ChangePassword">Change password</a>
+            @if (isAdmin)
+            {
+                <a class="btn btn-ghost" asp-action="Index">Manage students</a>
+                <a class="btn btn-ghost" asp-action="AddCourse">Add course</a>
+            }
+        </div>
+    </div>
+</section>
