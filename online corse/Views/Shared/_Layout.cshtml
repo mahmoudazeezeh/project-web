@@ -34,26 +34,41 @@
                 <a asp-controller="Student" asp-action="Add">Sign up</a>
             }
         </nav>
-        @if (sid != null)
-        {
-            <a class="account-link" asp-controller="Student" asp-action="sDetails">@uname</a>
-        }
-        else
-        {
-            <a class="btn btn-nav" asp-controller="Student" asp-action="Login">Sign in</a>
-        }
+        <div class="top-actions">
+            @if (sid != null)
+            {
+                <a class="account-link" asp-controller="Student" asp-action="sDetails">@uname</a>
+                <a class="logout-link" asp-controller="Student" asp-action="Logout">Log out</a>
+            }
+            else
+            {
+                <a class="btn btn-nav" asp-controller="Student" asp-action="Login">Sign in</a>
+            }
+        </div>
     </header>
     <main class="page">
         @RenderBody()
     </main>
     <footer class="foot">
-        <div>
+        <div class="foot-brand">
+            <a class="brand" asp-controller="Home" asp-action="Index">Lerno</a>
+            <p>Browse, enroll, and manage your course from one account.</p>
+        </div>
+        <nav class="foot-nav">
             <a asp-controller="Home" asp-action="Index">Home</a>
             <a asp-controller="Student" asp-action="Courses">Courses</a>
-            <a asp-controller="Student" asp-action="Add">Sign up</a>
-            <a asp-controller="Student" asp-action="Login">Sign in</a>
-        </div>
-        <p>Lerno platform</p>
+            @if (sid != null)
+            {
+                <a asp-controller="Student" asp-action="sDetails">Account</a>
+                <a asp-controller="Student" asp-action="Logout">Log out</a>
+            }
+            else
+            {
+                <a asp-controller="Student" asp-action="Add">Sign up</a>
+                <a asp-controller="Student" asp-action="Login">Sign in</a>
+            }
+        </nav>
+        <p class="foot-copy">Lerno platform</p>
     </footer>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

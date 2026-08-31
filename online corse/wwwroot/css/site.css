@@ -46,6 +46,8 @@ a:hover { color: var(--accent); }
 .nav { display: flex; gap: 1.25rem; flex: 1; flex-wrap: wrap; align-items: center; }
 .nav a { color: var(--ink); font-weight: 500; }
 
+.top-actions { display: flex; align-items: center; gap: 0.85rem; }
+
 .account-link {
     color: var(--ink);
     font-weight: 650;
@@ -53,6 +55,8 @@ a:hover { color: var(--accent); }
     border: 1px solid var(--line);
     border-radius: 999px;
 }
+
+.logout-link { color: var(--mute); font-weight: 500; }
 
 .btn-nav {
     background: var(--ink);
@@ -91,16 +95,21 @@ body.home .page { padding: 0 0 4rem; }
 .home-body { padding: 2.4rem 6vw 0; }
 
 .foot {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-    padding: 1.4rem 6vw 2rem;
+    display: grid;
+    grid-template-columns: 1.3fr 1fr auto;
+    gap: 1.4rem 2rem;
+    align-items: end;
+    padding: 2rem 6vw 2.2rem;
+    margin-top: auto;
+    background: #fff;
     border-top: 1px solid var(--line);
     color: var(--mute);
-    font-size: 0.9rem;
+    font-size: 0.92rem;
 }
-.foot a { margin-right: 1rem; color: var(--ink); }
+.foot-brand p { margin: 0.4rem 0 0; max-width: 18rem; line-height: 1.45; }
+.foot-nav { display: flex; flex-wrap: wrap; gap: 0.75rem 1.15rem; }
+.foot-nav a { color: var(--ink); font-weight: 500; }
+.foot-copy { margin: 0; }
 
 .kicker {
     text-transform: uppercase;
@@ -202,6 +211,7 @@ th { font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.08em; colo
     .home-body { padding: 1.5rem 5vw 0; }
     .desk { grid-template-columns: 1fr; }
     .topbar { flex-wrap: wrap; padding: 0.9rem 5vw; }
+    .foot { grid-template-columns: 1fr; padding: 1.6rem 5vw 2rem; }
     body:not(.home) .page { padding: 1.5rem 5vw 3rem; }
     .facts { grid-template-columns: 1fr; }
 }
