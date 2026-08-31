@@ -70,6 +70,8 @@ namespace online_corse.Controllers
         [HttpPost]
         public IActionResult Login(string email, string stpass)
         {
+            email = (email ?? "").Trim();
+            stpass = stpass ?? "";
             Student s = context.Students.FirstOrDefault(x => x.Email == email && x.Password == stpass);
             if (s != null)
             {
@@ -107,8 +109,15 @@ namespace online_corse.Controllers
         public IActionResult ChangePassword(string newPass)
         {
             if (!In()) return RedirectToAction("Login");
-            Student S = context.Students.Find(HttpContext.Session.GetInt32("stid"));
-            S.Password = newPass;
+            if (string.IsNullOrWhiteSpace(newPass))
+            {
+                ViewBag.Error = "Enter a new password.";
+                return View();
+            }
+            int id = HttpContext.Session.GetInt32("stid").Value;
+            Student S = context.Students.FirstOrDefault(x => x.StudentId == id);
+            if (S == null) return RedirectToAction("Login");
+            S.Password = newPass.Trim();
             context.SaveChanges();
             return RedirectToAction("sDetails");
         }
