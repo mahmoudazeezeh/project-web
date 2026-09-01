@@ -1,26 +1,14 @@
 @model Corse
 @{
     var edit = Model.CorseId > 0;
-    string pageTitle;
-    string pageHelp;
-    if (edit)
-    {
-        pageTitle = "Edit course";
-        pageHelp = "Update the title, instructor, or price.";
-    }
-    else
-    {
-        pageTitle = "Add course";
-        pageHelp = "The new course appears in the catalog right after you save.";
-    }
-    ViewData["Title"] = pageTitle;
+    ViewData["Title"] = edit ? "Edit course" : "Add course";
 }
 
 <section class="auth">
     <section class="form-card panel">
         <p class="kicker">Admin</p>
-        <h1>@pageTitle</h1>
-        <p class="meta">@pageHelp</p>
+        <h1>@(edit ? "Edit course" : "Add course")</h1>
+        <p class="meta">@(edit ? "Update the title, instructor, or price." : "The new course appears in the catalog right after you save.")</p>
         <form asp-action="SaveCourse" method="post">
             @if (edit)
             {
