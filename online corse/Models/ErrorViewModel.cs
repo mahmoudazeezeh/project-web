@@ -4,6 +4,19 @@ namespace online_corse.Models
     {
         public string? RequestId { get; set; }
 
-        public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+        public bool ShowRequestId
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(RequestId))
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
     }
 }

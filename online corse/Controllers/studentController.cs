@@ -7,29 +7,67 @@ namespace online_corse.Controllers
     public class StudentController : Controller
     {
         private OnlineCoursesContext context { get; set; }
-        public StudentController(OnlineCoursesContext ctx) => context = ctx;
 
-        bool In() => HttpContext.Session.GetInt32("stid") != null;
-        bool Admin() => HttpContext.Session.GetString("email") == "aaazeezeh@gmail.com";
+        public StudentController(OnlineCoursesContext ctx)
+        {
+            context = ctx;
+        }
+
+        bool In()
+        {
+            if (HttpContext.Session.GetInt32("stid") != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        bool Admin()
+        {
+            if (HttpContext.Session.GetString("email") == "aaazeezeh@gmail.com")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         public IActionResult Index()
         {
-            if (!Admin()) return RedirectToAction("Login");
-            return View(context.Students.Include(s => s.Corse).ToList());
+            if (!Admin())
+            {
+                return RedirectToAction("Login");
+            }
+            return View(context.Students.Include("Corse").ToList());
         }
 
         public IActionResult search(string searchKey)
         {
-            if (!Admin()) return RedirectToAction("Login");
-            searchKey ??= "";
-            var Students = context.Students.Include(s => s.Corse)
-                .Where(s => s.Name.Contains(searchKey) || s.Email.Contains(searchKey)).ToList();
-            return View("Index", Students);
+            if (!Admin())
+            {
+                return RedirectToAction("Login");
+            }
+            if (searchKey == null)
+            {
+                searchKey = "";
+            }
+            var Students = from s in context.Students.Include("Corse")
+                           where s.Name.Contains(searchKey) || s.Email.Contains(searchKey)
+                           select s;
+            return View("Index", Students.ToList());
         }
 
         public IActionResult Delete(int id)
         {
-            if (!Admin()) return RedirectToAction("Login");
+            if (!Admin())
+            {
+                return RedirectToAction("Login");
+            }
             Student st = context.Students.Find(id);
             if (st != null && st.Email != "aaazeezeh@gmail.com")
             {
@@ -42,16 +80,23 @@ namespace online_corse.Controllers
         [HttpGet]
         public IActionResult Add()
         {
-            ViewBag.Corses = context.Corses.OrderBy(s => s.CorseName).ToList();
+            ViewBag.Corses = (from s in context.Corses
+                              orderby s.CorseName
+                              select s).ToList();
             return View();
         }
 
         [HttpPost]
         public IActionResult Add(Student s)
         {
-            if (s.Email == "aaazeezeh@gmail.com" || context.Students.Any(x => x.Email == s.Email))
+            bool emailTaken = (from x in context.Students
+                               where x.Email == s.Email
+                               select x).Any();
+            if (s.Email == "aaazeezeh@gmail.com" || emailTaken)
             {
-                ViewBag.Corses = context.Corses.OrderBy(c => c.CorseName).ToList();
+                ViewBag.Corses = (from c in context.Corses
+                                  orderby c.CorseName
+                                  select c).ToList();
                 ViewBag.Error = "This email cannot be used.";
                 return View();
             }
@@ -63,16 +108,28 @@ namespace online_corse.Controllers
         [HttpGet]
         public IActionResult Login()
         {
-            if (In()) return View("Welcom", HttpContext.Session.GetString("name"));
+            if (In())
+            {
+                return View("Welcom", HttpContext.Session.GetString("name"));
+            }
             return View();
         }
 
         [HttpPost]
         public IActionResult Login(string email, string stpass)
         {
-            email = (email ?? "").Trim();
-            stpass = stpass ?? "";
-            Student s = context.Students.FirstOrDefault(x => x.Email == email && x.Password == stpass);
+            if (email == null)
+            {
+                email = "";
+            }
+            email = email.Trim();
+            if (stpass == null)
+            {
+                stpass = "";
+            }
+            Student s = (from x in context.Students
+                         where x.Email == email && x.Password == stpass
+                         select x).FirstOrDefault();
             if (s != null)
             {
                 HttpContext.Session.SetInt32("stid", s.StudentId);
@@ -86,9 +143,14 @@ namespace online_corse.Controllers
 
         public IActionResult sDetails()
         {
-            if (!In()) return RedirectToAction("Login");
+            if (!In())
+            {
+                return RedirectToAction("Login");
+            }
             int? studentID = HttpContext.Session.GetInt32("stid");
-            Student S = context.Students.Include(x => x.Corse).FirstOrDefault(x => x.StudentId == studentID);
+            Student S = (from x in context.Students.Include("Corse")
+                         where x.StudentId == studentID
+                         select x).FirstOrDefault();
             return View(S);
         }
 
@@ -101,22 +163,34 @@ namespace online_corse.Controllers
         [HttpGet]
         public IActionResult ChangePassword()
         {
-            if (!In()) return RedirectToAction("Login");
+            if (!In())
+            {
+                return RedirectToAction("Login");
+            }
             return View();
         }
 
         [HttpPost]
         public IActionResult ChangePassword(string newPass)
         {
-            if (!In()) return RedirectToAction("Login");
+            if (!In())
+            {
+                return RedirectToAction("Login");
+            }
             if (string.IsNullOrWhiteSpace(newPass))
             {
                 ViewBag.Error = "Enter a new password.";
                 return View();
             }
-            int id = HttpContext.Session.GetInt32("stid").Value;
-            Student S = context.Students.FirstOrDefault(x => x.StudentId == id);
-            if (S == null) return RedirectToAction("Login");
+            int? sessionId = HttpContext.Session.GetInt32("stid");
+            int id = sessionId.Value;
+            Student S = (from x in context.Students
+                         where x.StudentId == id
+                         select x).FirstOrDefault();
+            if (S == null)
+            {
+                return RedirectToAction("Login");
+            }
             S.Password = newPass.Trim();
             context.SaveChanges();
             return RedirectToAction("sDetails");
@@ -124,43 +198,122 @@ namespace online_corse.Controllers
 
         public IActionResult Courses(string searchKey)
         {
-            var list = string.IsNullOrWhiteSpace(searchKey) ? context.Corses
-                : context.Corses.Where(c => c.CorseName.Contains(searchKey) || c.Instructor.Contains(searchKey));
-            ViewBag.Enrolled = In() ? context.Students.Find(HttpContext.Session.GetInt32("stid"))?.CorseId : 0;
+            IQueryable<Corse> list;
+            if (string.IsNullOrWhiteSpace(searchKey))
+            {
+                list = context.Corses;
+            }
+            else
+            {
+                list = from c in context.Corses
+                       where c.CorseName.Contains(searchKey) || c.Instructor.Contains(searchKey)
+                       select c;
+            }
+
+            if (In())
+            {
+                Student enrolledStudent = context.Students.Find(HttpContext.Session.GetInt32("stid"));
+                if (enrolledStudent != null)
+                {
+                    ViewBag.Enrolled = enrolledStudent.CorseId;
+                }
+                else
+                {
+                    ViewBag.Enrolled = null;
+                }
+            }
+            else
+            {
+                ViewBag.Enrolled = 0;
+            }
+
             ViewBag.Admin = Admin();
-            return View(list.OrderBy(c => c.CorseName).ToList());
+            var ordered = from c in list
+                          orderby c.CorseName
+                          select c;
+            return View(ordered.ToList());
         }
 
         [HttpGet]
-        public IActionResult AddCourse() => Admin() ? View("CourseForm", new Corse()) : RedirectToAction("Login");
+        public IActionResult AddCourse()
+        {
+            if (Admin())
+            {
+                return View("CourseForm", new Corse());
+            }
+            else
+            {
+                return RedirectToAction("Login");
+            }
+        }
 
         [HttpGet]
-        public IActionResult EditCourse(int id) => Admin() ? View("CourseForm", context.Corses.Find(id)) : RedirectToAction("Login");
+        public IActionResult EditCourse(int id)
+        {
+            if (Admin())
+            {
+                return View("CourseForm", context.Corses.Find(id));
+            }
+            else
+            {
+                return RedirectToAction("Login");
+            }
+        }
 
         [HttpPost]
         public IActionResult SaveCourse(Corse c)
         {
-            if (!Admin()) return RedirectToAction("Login");
-            if (c.CorseId == 0) context.Corses.Add(c); else context.Corses.Update(c);
+            if (!Admin())
+            {
+                return RedirectToAction("Login");
+            }
+            if (c.CorseId == 0)
+            {
+                context.Corses.Add(c);
+            }
+            else
+            {
+                context.Corses.Update(c);
+            }
             context.SaveChanges();
             return RedirectToAction("Courses");
         }
 
         public IActionResult DeleteCourse(int id)
         {
-            if (!Admin()) return RedirectToAction("Login");
-            Corse other = context.Corses.FirstOrDefault(x => x.CorseId != id);
-            if (other == null) return RedirectToAction("Courses");
-            foreach (var s in context.Students.Where(s => s.CorseId == id))
+            if (!Admin())
+            {
+                return RedirectToAction("Login");
+            }
+            Corse other = (from x in context.Corses
+                           where x.CorseId != id
+                           select x).FirstOrDefault();
+            if (other == null)
+            {
+                return RedirectToAction("Courses");
+            }
+            var enrolled = from s in context.Students
+                           where s.CorseId == id
+                           select s;
+            foreach (var s in enrolled)
+            {
                 s.CorseId = other.CorseId;
+            }
             Corse c = context.Corses.Find(id);
-            if (c != null) { context.Corses.Remove(c); context.SaveChanges(); }
+            if (c != null)
+            {
+                context.Corses.Remove(c);
+                context.SaveChanges();
+            }
             return RedirectToAction("Courses");
         }
 
         public IActionResult Enroll(int id)
         {
-            if (!In()) return RedirectToAction("Login");
+            if (!In())
+            {
+                return RedirectToAction("Login");
+            }
             Student S = context.Students.Find(HttpContext.Session.GetInt32("stid"));
             S.CorseId = id;
             context.SaveChanges();

@@ -1,4 +1,4 @@
-﻿@model List<Student>
+@model List<Student>
 @{
     ViewData["Title"] = "Students";
 }
@@ -32,7 +32,12 @@
                     <td>@s.StudentId</td>
                     <td>@s.Name</td>
                     <td>@s.Email</td>
-                    <td>@s.Corse?.CorseName</td>
+                    <td>
+                        @if (s.Corse != null)
+                        {
+                            @s.Corse.CorseName
+                        }
+                    </td>
                     <td>
                         @if (s.Email != "aaazeezeh@gmail.com")
                         {

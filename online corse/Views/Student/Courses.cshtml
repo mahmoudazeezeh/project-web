@@ -1,7 +1,11 @@
 @model List<Corse>
 @{
     ViewData["Title"] = "Courses";
-    var enrolled = (int?)ViewBag.Enrolled ?? 0;
+    int enrolled = 0;
+    if (ViewBag.Enrolled != null)
+    {
+        enrolled = (int)ViewBag.Enrolled;
+    }
     var signedIn = Context.Session.GetInt32("stid") != null;
 }
 

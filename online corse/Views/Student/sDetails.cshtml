@@ -25,9 +25,12 @@
     </div>
     <aside class="panel">
         <p class="kicker">Enrolled course</p>
-        <h2>@Model.Corse?.CorseName</h2>
-        <p class="meta">@Model.Corse?.Instructor</p>
-        <p class="price">$@Model.Corse?.CosrePrice</p>
+        @if (Model.Corse != null)
+        {
+            <h2>@Model.Corse.CorseName</h2>
+            <p class="meta">@Model.Corse.Instructor</p>
+            <p class="price">$@Model.Corse.CosrePrice</p>
+        }
         <a class="btn btn-ghost" asp-action="Courses">Change course</a>
     </aside>
 </section>
